@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager with Vue.js</title>
+    <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+    <div id="app" class="container">
+        <h1>Task Manager</h1>
+
+        <!-- Task List -->
+        <div class="task-list">
+            <h2>All Tasks</h2>
+            <ul>
+                <li v-for="(task, index) in tasks" :key="index" class="task-card">
+                    <div class="task-header">
+                        <h3>{{ task.name }}</h3>
+                        <span class="status-badge" :class="statusClass(task.status)">{{ task.status }}</span>
+                    </div>
+                    <p>Description: {{ task.description }}</p>
+                    <p>Due Date: {{ task.runAt }}</p>
+                    <button @click="editTask(index)" class="edit-button">Edit</button>
+                    <button @click="deleteTask(task.id, index)" class="delete-button">Delete</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Task Form -->
+        <div class="task-form">
+            <h2>{{ editIndex === null ? 'Add Task' : 'Edit Task' }}</h2>
+            <form @submit.prevent="saveTask">
+                <label for="task-name">Task Name</label>
+                <input type="text" id="task-name" v-model="taskForm.name" required>
+
+                <label for="task-description">Task Description</label>
+                <textarea id="task-description" v-model="taskForm.description" required></textarea>
+
+                <label for="task-duedate">Due Date</label>
+                <input type="datetime-local" id="task-duedate" v-model="taskForm.duedate" required>
+
+                <button type="submit">{{ editIndex === null ? 'Save Task' : 'Update Task' }}</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
