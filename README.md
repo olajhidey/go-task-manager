@@ -5,4 +5,5 @@ This repository makes use of Go Task scheduling system to Help Schedule task and
 ## How to run project
 
 - Clone repository 
+- Rename `.env.example` to `.env`
 - Run `go run main.go`
