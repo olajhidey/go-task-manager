@@ -76,13 +76,29 @@ func (s *Scheduler) Start() {
 	go func() {
 		for {
 			now := ParseDate(time.Now().Format("2006-01-02 15:04"))
-			// log.Println(now)
-			s.mu.RLock()
+
 			if len(s.tasks) == 0 {
-				s.mu.RUnlock()
 				time.Sleep(1 * time.Second)
 				continue
 			}
+
+			nextTask := s.tasks[0]
+			if now.After(nextTask.RunAt) || now.Equal(nextTask.RunAt) {
+				s.mu.RLock()
+				task := heap.Pop(&s.tasks).(*Task) // Get the next task
+				log.Println("This has been deleted")
+				go s.executeTask(task)
+				log.Println("Pronto!")
+			}
+
+			time.Sleep(1 * time.Second)
+			// log.Println(now)
+			// s.mu.RLock()
+			// if len(s.tasks) == 0 {
+			// 	s.mu.RUnlock()
+			// 	time.Sleep(1 * time.Second)
+			// 	continue
+			// }
 
 			// for _, task := range s.tasks{
 
@@ -103,7 +119,7 @@ func (s *Scheduler) Start() {
 			// 	continue
 			// }
 
-			nextTask := s.tasks[0]
+			// nextTask := s.tasks[0]
 			// now := time.Now()
 			// if now.Before(nextTask.RunAt) {
 			// 	s.mu.RUnlock()
@@ -111,18 +127,15 @@ func (s *Scheduler) Start() {
 			// 	continue
 			// }
 
-			log.Println(nextTask)
-
-			if now.After(nextTask.RunAt) || now.Equal(nextTask.RunAt) {
-			
-				s.mu.RUnlock()
-				s.mu.Lock()
-				task := heap.Pop(&s.tasks).(*Task) // Get the next task
-				log.Println("This has been deleted")
-				s.mu.Unlock()
-				go s.executeTask(nextTask)
-				log.Println("Pronto!")
-			}
+			// if now.After(nextTask.RunAt) || now.Equal(nextTask.RunAt) {
+			// 	s.mu.RUnlock()
+			// 	s.mu.Lock()
+			// 	task := heap.Pop(&s.tasks).(*Task) // Get the next task
+			// 	log.Println("This has been deleted")
+			// 	s.mu.Unlock()
+			// 	go s.executeTask(task)
+			// 	log.Println("Pronto!")
+			// }
 
 			// time.Sleep(1 * time.Second)
 

@@ -8,25 +8,36 @@ new Vue({
             runAt: '',
             status: 'Pending'
         },
-        editIndex: null
+        editIndex: null,
+        intervalIId: null
     },
-    mounted(){
+    mounted() {
         this.getTasks()
+
+        this.intervalIId = setInterval(() => {
+            this.getTasks()
+        }, 5000)
+     
+    },
+    beforeDestroy() {
+        if (this.intervalIId) {
+            clearInterval(this.intervalIId)
+        }
     },
     methods: {
-       async saveTask() {
+        async saveTask() {
             if (this.editIndex === null) {
                 const request = await fetch("/api/task/create", {
                     method: 'POST',
                     body: JSON.stringify({
-                        name: this.taskForm.name, 
+                        name: this.taskForm.name,
                         description: this.taskForm.description,
                         runAt: this.taskForm.duedate,
                         status: "Scheduled"
                     })
                 })
 
-                if(!request.ok){
+                if (!request.ok) {
                     throw new Error("Something went wrong", request)
                 }
 
@@ -43,7 +54,7 @@ new Vue({
             this.taskForm = { ...this.tasks[index] };
             this.editIndex = index;
         },
-        async getTasks(){
+        async getTasks() {
 
             // Get all of the tasks 
             const response = await fetch("/api/tasks", {
@@ -51,21 +62,21 @@ new Vue({
             })
 
             const data = await response.json()
-            if (data != null){
+            if (data != null) {
                 this.tasks = []
             }
-            console.log(data)
+
             this.tasks = data
-        }, 
+        },
         async deleteTask(task, index) {
 
             this.tasks.splice(index, 1);
-            const url = "/api/task/delete/"+task
+            const url = "/api/task/delete/" + task
             const request = await fetch(url, {
                 method: 'DELETE'
             })
 
-            if(!request.ok){
+            if (!request.ok) {
                 throw new Error("Something went wrong", request)
             }
 
